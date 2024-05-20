@@ -1,0 +1,11 @@
+Including esp_timer in color
+CMake Error at /Users/btatacc/esp/esp-idf/tools/cmake/component.cmake:312 (message):
+  Include directory
+  '/Users/btatacc/Repository/smart-greenhouse-liwasi/components/control/dht'
+  is not a directory.
+Call Stack (most recent call first):
+  /Users/btatacc/esp/esp-idf/tools/cmake/component.cmake:486 (__component_add_include_dirs)
+  components/control/CMakeLists.txt:1 (idf_component_register)
+
+
+ninja: error: rebuilding 'build.ninja': subcommand failed

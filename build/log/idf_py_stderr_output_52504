@@ -1,0 +1,10 @@
+CMake Error at /Users/btatacc/esp/esp-idf/tools/cmake/build.cmake:245 (message):
+  Failed to resolve component 'dht.h'.
+Call Stack (most recent call first):
+  /Users/btatacc/esp/esp-idf/tools/cmake/build.cmake:281 (__build_resolve_and_add_req)
+  /Users/btatacc/esp/esp-idf/tools/cmake/build.cmake:574 (__build_expand_requirements)
+  /Users/btatacc/esp/esp-idf/tools/cmake/project.cmake:440 (idf_build_process)
+  CMakeLists.txt:10 (project)
+
+
+ninja: error: rebuilding 'build.ninja': subcommand failed

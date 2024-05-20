@@ -1,0 +1,5 @@
+[0/1] Re-running CMake...
+-- Building ESP-IDF components for target esp32
+-- Configuring incomplete, errors occurred!
+FAILED: build.ninja 
+/usr/local/Cellar/cmake/3.27.7/bin/cmake --regenerate-during-build -S/Users/btatacc/Repository/smart-greenhouse-liwasi -B/Users/btatacc/Repository/smart-greenhouse-liwasi/build
