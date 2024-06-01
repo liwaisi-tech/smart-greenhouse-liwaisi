@@ -63,4 +63,25 @@ build/log/
 /Obj/*.pbi.*
 
 # Log files
-*.log
+*.ninja_log
+*ninja_deps
+/build.ninja_deps
+
+# Compiled Binaries
+*.bin
+*.elf
+*.hex
+*.map
+
+# Created by git when using merge tools for conflicts
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
+*_BACKUP_*.txt
+*_BASE_*.txt
+*_LOCAL_*.txt
+*_REMOTE_*.txt
+
+# macOS Finder incidental files
+.DS_Store
