@@ -19,7 +19,7 @@ void sensor_ground(void *arg){
 }
 
 
-void sensor_climate(void *arg){
+void send_data_climate(void *arg){
     xMessage sensor;
     //----------Variables de captura de temperatura y humedad---------//
     float temperature = 0, humidity = 0;
@@ -62,7 +62,7 @@ void sensor_main()
         return;
     }
 
-    xTaskCreatePinnedToCore(sensor_climate, "sensor_climate", 4096, NULL, 2, NULL, 0);
+    xTaskCreatePinnedToCore(send_data_climate, "send_data_climate", 4096, NULL, 2, NULL, 0);
     //xTaskCreatePinnedToCore(sensor_ground, "sensor_ground", 4096, NULL, 1, NULL, 0);
 }
 
