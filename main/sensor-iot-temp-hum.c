@@ -14,6 +14,16 @@ float temperature = 0, humidity = 0;
 //------ Variables mock para enviar al index----------//
 int humgerm;
 
+void read_data_task(void *pvParameters) {
+    xMessage data;
+    while (1) {
+        if (read_data_climate(&data) == pdTRUE) {
+            temperature = data.temperature;
+            humidity = data.humidity;
+        }
+        vTaskDelay(pdMS_TO_TICKS(1000)); // Ajusta el intervalo de lectura según sea necesario
+    }
+}
 //-----------Handler obtenerdatos---------//
 static esp_err_t data_sensor_get_handler(httpd_req_t *req) {
     
@@ -68,10 +78,11 @@ void web_server_init() {
 
 
 
-void app_main(void)
+void app_main()
 {
     if (init_interface() == ESP_OK){
-        xTaskCreate(sensorDHT, "sensorDHT", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
+        sensor_main(); //Crea tarea que escribe valores en la cola
+         xTaskCreate(read_data_task, "read_data_task", 4096, NULL, 3, NULL);
         web_server_init();
     }
 

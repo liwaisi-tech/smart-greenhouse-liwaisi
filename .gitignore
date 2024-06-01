@@ -53,3 +53,14 @@ dkms.conf
 *.vscode
 sdkconfig.old
 *.DS_Store
+# Ignore build results
+build/
+build/log/
+# IAR Debug Obj
+/Obj/*.pbd
+/Obj/*.pbd.*
+/Obj/*.pbi
+/Obj/*.pbi.*
+
+# Log files
+*.log
