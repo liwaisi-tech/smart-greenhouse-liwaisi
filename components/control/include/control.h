@@ -1,6 +1,13 @@
+#ifndef CONTROL_H
+#define CONTROL_H
+#include "freertos/FreeRTOS.h"
 
-#ifndef __CONTROL_H__
-#define __CONTROL_H__
-void sensorDHT(void *pvParameters);
+typedef struct {
+    float temperature;
+    float humidity;
+} xMessage;
+
+void sensor_main();
+BaseType_t read_data_climate(xMessage *data);
 
 #endif
