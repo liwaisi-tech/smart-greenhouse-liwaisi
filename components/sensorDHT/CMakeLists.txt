@@ -1,5 +1,3 @@
-idf_component_register(SRCS "control.c"
+idf_component_register(SRCS "sensorDHT.c"
                     INCLUDE_DIRS "include"
                     REQUIRES "dht")
-
-            

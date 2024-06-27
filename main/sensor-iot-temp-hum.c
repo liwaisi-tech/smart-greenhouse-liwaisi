@@ -4,22 +4,24 @@
 #include "string.h"
 #include "esp_http_server.h"
 #include "network.h"
-#include "control.h"
+#include "sensorDHT.h"
 
 extern const char index_start[] asm("_binary_index_html_start");
 extern const char index_end[] asm("_binary_index_html_end");
 
 //----------Variables de captura de temperatura y humedad---------//
-float temperature = 0, humidity = 0;
+float temp1= 0, hum1 = 0, temp2 = 0, hum2 = 0;
 //------ Variables mock para enviar al index----------//
 int humgerm;
 
-void read_data_task(void *pvParameters) {
-    xMessage data;
+void read_data_task(void *pvParameters) { 
     while (1) {
+        Data data;
         if (read_data_climate(&data) == pdTRUE) {
-            temperature = data.temperature;
-            humidity = data.humidity;
+            temp1 = data.temp1;
+            hum1 = data.hum1;
+            temp2 = data.temp2;
+            hum2 = data.hum2;
         }
         vTaskDelay(pdMS_TO_TICKS(1000)); // Ajusta el intervalo de lectura según sea necesario
     }
@@ -29,14 +31,14 @@ static esp_err_t data_sensor_get_handler(httpd_req_t *req) {
     
     httpd_resp_set_hdr(req, "Content-Type", "application/json");
     char res[100];
-    if (humidity > 70) {
+    if (hum1 < 70) {
         humgerm = 1; //"Riego aereo On";
     }
-    else if (humidity<= 70) {
+    else if (hum1> 70) {
         humgerm = 0; //"Riego aereo Off";
     }
 
-    sprintf(res, "{ \"humidity\": %f, \"temperature\": %f, \"alarma\": %d}", humidity, temperature,humgerm);
+    sprintf(res, "{ \"hum1\": %f, \"temp1\": %f, \"hum2\": %f, \"temp2\": %f,\"alarma\": %d}", hum1, temp1,hum2,temp2,humgerm);
     httpd_resp_send(req, res, HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
 }
@@ -82,7 +84,7 @@ void app_main()
 {
     if (init_interface() == ESP_OK){
         sensor_main(); //Crea tarea que escribe valores en la cola
-         xTaskCreate(read_data_task, "read_data_task", 4096, NULL, 3, NULL);
+        xTaskCreate(read_data_task, "read_data_task", 4096, NULL, 3, NULL);
         web_server_init();
     }
 
