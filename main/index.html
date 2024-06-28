@@ -48,7 +48,24 @@
             font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
             font-size: 20px;
         }
+        .containerCajones{
+            display: flex;
+            flex-direction:column;
+            align-content: space-between;
+            flex-wrap: nowrap;
+            margin:  100px;
+            justify-content: center;
+            text-align: center;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            font-size: 20px;
+        }
+        .cajon1{ 
+            margin-right: 40px ;
+            color: #597;
+            column-gap: 20px;
+            background-color:bisque;
 
+        }
         .notificationcontainer{ 
             margin-right: 40px ;
             color: #597;
@@ -92,24 +109,46 @@
 <body class ="body">
     <div class="container">
         <h1>SmartGrow Liwasi Modulo Unifamiliar</h1>
-        <div>
-            <span class="label">Temperatura:</span>
-            <i class="icon fas fa-thermometer-half"></i>
-            <span id="temperature" class="value"></span>
-            <span class="unit">°C</span>
-        </div>
-        <div>
-            <span class="label">Humedad:</span>
-            <i class="icon fas fa-tint"></i>
-            <span id="humidity" class="value"></span>
-            <span class="unit">%</span>
+        <div class = containerCajones>
+            <div class = cajon1>
+                <div>
+                    <span class="label">Temperatura Cajon2:</span>
+                    <i class="icon fas fa-thermometer-half"></i>
+                    <span id="temp1" class="value"></span>
+                    <span class="unit">°C</span>
+                </div>
+                <div>
+                    <span class="label">Humedad Cajon1:</span>
+                    <i class="icon fas fa-tint"></i>
+                    <span id="hum1" class="value"></span>
+                    <span class="unit">%</span>
+                </div>
+            </div>
+            <div class="cajones">
+                <div>
+                    <span class="label">Temperatura Cajon2:</span>
+                    <i class="icon fas fa-thermometer-half"></i>
+                    <span id="temp2" class="value"></span>
+                    <span class="unit">°C</span>
+                </div>
+                <div>
+                    <span class="label">Humedad Cajon2:</span>
+                    <i class="icon fas fa-tint"></i>
+                    <span id="hum2" class="value"></span>
+                    <span class="unit">%</span>
+                </div>
+            </div>
+            
+           
         </div>
         
         <script>
             // JavaScript para actualizar los valores de temperatura y humedad
-            function updateData(temperature, humidity, alarma) {
-                document.getElementById("temperature").innerText = temperature.toFixed(1);
-                document.getElementById("humidity").innerText = humidity.toFixed(1);
+            function updateData(temp1, hum1,temp2,hum2, alarma) {
+                document.getElementById("temp1").innerText = temp1.toFixed(1);
+                document.getElementById("hum1").innerText = hum1.toFixed(1);
+                document.getElementById("temp2").innerText = temp2.toFixed(1);
+                document.getElementById("hum2").innerText = hum2.toFixed(1);
                 if (alarma.toFixed(1) == 1){
                     document.getElementById("action").innerText = "Ventiladores ON";
                 }
@@ -125,12 +164,13 @@
                     var response = JSON.parse(data); 
 
                     // Obtener los valores de temperatura y humedad del objeto
-                    var temperature = response.temperature;
-                    var humidity = response.humidity;
+                    var temp1 = response.temp1;
+                    var hum1 = response.hum1;
+                    var temp2 = response.temp2;
+                    var hum2 = response.hum2;
                     var alarma = response.alarma;
-
                     // Actualizar los valores en la página HTML
-                    updateData(temperature, humidity, alarma);
+                    updateData(temp1, hum1,temp2,hum2, alarma);
                 });
             }, 5000); // Actualizar cada 1 min (ajustar según tus necesidades)
         </script>
