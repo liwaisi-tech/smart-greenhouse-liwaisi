@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "readSensors.h"
+#include "actionPage.h"
 
 void func(void)
 {

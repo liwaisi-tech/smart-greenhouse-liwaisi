@@ -1,2 +1,2 @@
-idf_component_register(SRCS "readSensors.c"
+idf_component_register(SRCS "actionPage.c"
                     INCLUDE_DIRS "include")
