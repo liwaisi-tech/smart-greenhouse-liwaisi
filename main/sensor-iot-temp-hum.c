@@ -85,6 +85,7 @@ void app_main()
     if (init_interface() == ESP_OK){
         sensor_main(); //Crea tarea que escribe valores en la cola
         xTaskCreate(read_data_task, "read_data_task", 4096, NULL, 3, NULL);
+        
         web_server_init();
     }
 
