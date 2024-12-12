@@ -54,6 +54,7 @@ dkms.conf
 sdkconfig.old
 *.DS_Store
 # Ignore build results
+*.projbuild
 build/
 build/log/
 # IAR Debug Obj
@@ -66,6 +67,8 @@ build/log/
 *.ninja_log
 *ninja_deps
 /build.ninja_deps
+*.lock
+
 
 # Compiled Binaries
 *.bin
