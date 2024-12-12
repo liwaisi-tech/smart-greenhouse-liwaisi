@@ -10,6 +10,7 @@
 #define SENSOR_TYPE DHT_TYPE_AM2301
 #define GPIO_SENSOR1 33
 #define GPIO_SENSOR2 32
+static const char *TAG = "SensorDHT";
 QueueHandle_t buffer;//Objeto de la cola    
 
 
@@ -19,17 +20,25 @@ void send_data_climate(void *arg){
 
      //----------Variables de captura de temperatura y humedad---------//
      Data sensor;
-        ESP_ERROR_CHECK(dht_read_float_data(SENSOR_TYPE, GPIO_SENSOR1,&sensor.hum1,  &sensor.temp1 ));
-         vTaskDelay(pdMS_TO_TICKS(500));
-        ESP_ERROR_CHECK(dht_read_float_data(SENSOR_TYPE, GPIO_SENSOR2,&sensor.hum2,  &sensor.temp2 ));
-        if (xQueueSend(buffer, &sensor, pdMS_TO_TICKS(100)) == pdTRUE) {
-            printf("humidity Sensor1: %f  temperatura Sensor1: %f\n",sensor.hum1,sensor.temp1);
-            printf("humidity Sensor2: %f  temperatura Sensor2: %f\n",sensor.hum2,sensor.temp2);
-            printf("---------------------------------------------------\n");
+      esp_err_t ret1 = dht_read_float_data(SENSOR_TYPE, GPIO_SENSOR1,&sensor.hum1,  &sensor.temp1);
+        if (ret1 == ESP_OK) {
+            // Procesar datos
+            ESP_LOGI(TAG, "Lectura exitosa: Temp1: %f°C, Hum1: %f", sensor.temp1, sensor.hum1);
+        } else {
+            ESP_LOGW(TAG, "Error en lectura DHT: %d", ret1);
+            // Esperar antes de reintentar
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            continue;
         }
-         else
-        {
-            ESP_LOGE("Cola", "Item no recibido, timeout expiro!");
+         esp_err_t ret2 = dht_read_float_data(SENSOR_TYPE, GPIO_SENSOR2, &sensor.hum2, &sensor.temp2);
+        if (ret2 == ESP_OK) {
+            // Procesar datos
+            ESP_LOGI(TAG, "Lectura exitosa: Temp2: %f°C, Hum2: %f", sensor.temp2, sensor.hum2);
+        } else {
+            ESP_LOGW(TAG, "Error en lectura DHT: %d", ret2);
+            // Esperar antes de reintentar
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            continue;
         }
     // Esperar un tiempo antes de leer nuevamente (por ejemplo, 1 segundos)
         vTaskDelay(pdMS_TO_TICKS(1000));
@@ -60,7 +69,7 @@ void sensor_main()
         return;
     }
 
-    xTaskCreatePinnedToCore(send_data_climate, "send_data_climate", 4096, NULL, 2, NULL, 0);
+    xTaskCreate(send_data_climate, "send_data_climate", 4096, NULL, 3, NULL);
     //xTaskCreatePinnedToCore(sensor_ground, "sensor_ground", 4096, NULL, 1, NULL, 0);
 }
 

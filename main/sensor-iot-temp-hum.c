@@ -3,8 +3,17 @@
 #include "freertos/task.h"
 #include "string.h"
 #include "esp_http_server.h"
-#include "network.h"
 #include "sensorDHT.h"
+#include "wifi.h"
+#include "tempHumidity.h"
+#include "sensorYL69.h"
+#include "yl69.h"
+#include "esp_log.h"
+#include "nvs_flash.h"
+
+#define QUEUE_SIZE 10  // Define el tamaño de la cola
+QueueHandle_t buffer_irrigation;  // Declara la variable global para la cola de riego
+QueueHandle_t buffer_ventilation;  // Declara la variable global para la cola de ventilacion 
 
 extern const char index_start[] asm("_binary_index_html_start");
 extern const char index_end[] asm("_binary_index_html_end");
@@ -13,6 +22,18 @@ extern const char index_end[] asm("_binary_index_html_end");
 float temp1= 0, hum1 = 0, temp2 = 0, hum2 = 0;
 //------ Variables mock para enviar al index----------//
 int humgerm;
+// Definir el TAG para logging
+static const char *TAG = "sensor-iot_temp_hum";
+
+void recive_data_YL69_task(void *pvParameters) {
+    while (1) {
+        yl69_reading_t reading;
+        if (xQueueReceive(buffer_irrigation, &reading, 0) == pdTRUE) {
+            ESP_LOGI(TAG, "Dato recibido Sensor %d humedad suelo %d", reading.sensor_id, reading.humidity);
+        }
+        vTaskDelay(pdMS_TO_TICKS(1000)); // Ajusta el intervalo de lectura según sea necesario
+    }
+}
 
 void read_data_task(void *pvParameters) { 
     while (1) {
@@ -78,15 +99,47 @@ void web_server_init() {
   printf("Error al iniciar servidor\n");
 }
 
-
+void log_startup_info() {
+    ESP_LOGI(TAG, "Startup..");
+    ESP_LOGI(TAG, "Free memory: %" PRIu32 " bytes", esp_get_free_heap_size());
+    ESP_LOGI(TAG, "IDF version: %s", esp_get_idf_version());
+}
 
 void app_main()
 {
-    if (init_interface() == ESP_OK){
-        sensor_main(); //Crea tarea que escribe valores en la cola
-        xTaskCreate(read_data_task, "read_data_task", 4096, NULL, 3, NULL);
-        
-        web_server_init();
+    log_startup_info();
+     esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+      ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
     }
+    ESP_ERROR_CHECK(ret);
+    ESP_ERROR_CHECK(wifi_init_sta());
 
+    //create the irrigation queue buffer 
+    buffer_irrigation = xQueueCreate(QUEUE_SIZE, sizeof(tempHumidity_t));
+    if (buffer_irrigation == NULL) {
+        ESP_LOGE(TAG, "Error al crear la cola para YL69");
+        return;
+    }
+    //create the ventilation queue buffer 
+    buffer_ventilation = xQueueCreate(QUEUE_SIZE, sizeof(tempHumidity_t));
+    if (buffer_ventilation == NULL) {
+        ESP_LOGE(TAG, "Error al crear la cola para ventilacion");
+        return;
+    }
+    // inicializar config de sensores YL69
+    sensor_yl69_init(&buffer_irrigation);
+
+    //inicia captura de datos de sensores YL69
+    get_data_sensorYL69();
+    
+    // Crear tarea de lectura
+    ESP_LOGI(TAG, "iniciando recepcion de datos de la cola de riegoYL69");
+    xTaskCreate(recive_data_YL69_task, "recive_data_YL69_task", 4096, NULL, 3, NULL);
+    
+    sensor_main(); //Crea tarea que escribe valores en la cola
+    xTaskCreate(read_data_task, "read_data_task", 4096, NULL, 3, NULL);   
+    web_server_init();
 }
+

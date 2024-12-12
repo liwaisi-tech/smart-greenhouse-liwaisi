@@ -8,9 +8,11 @@ typedef struct
     float humidity1;
     float temperature2;
     float humidity2;
-    float: humGroud1:
-    float humGround2;
-} TempHumidity;
+    float humGroud1;
+    float humGroud2;
+} tempHumidity_t;
+
+char* convert_to_json_string(tempHumidity_t* data);
 
 
 #endif // TEMPHUMIDITY_H

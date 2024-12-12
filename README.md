@@ -1,46 +1,67 @@
-# SmartGrow Liwasi Modulo Unifamiliar
+# SmartGrow Liwasi - Módulo Unifamiliar
 
-Este es el código para crear un dispostivo IoT que tenga la capacidad de controlar  acciones al interior del invernadero para controlar el microclima con capacidad de cultivar  5 tipos de hortalizas a una familia en la región de los llanos. Mediante el  sensado de  la temperatura y la humedad en tiempo real, utilizando dos sensores  DHT22 conectado a un dispositivo ESP32  que ayudan a derminar el accionar de ventiladores, sistema de riego por neblina y sistema de riego por goteo conforme a lo requerido para mantener las condiciones.
+## Descripción
+Sistema IoT para control de microclima en invernadero familiar, diseñado para el cultivo de hortalizas en la región de los llanos. El sistema utiliza sensores de temperatura, humedad ambiental y humedad del suelo para automatizar sistemas de ventilación y riego.
 
-## Stage actual 
-El programa actualmente  recopila los datos del sensor y los muestra en una página HTML de manera dinámica, actualizando los valores cada 10 seg, adicionalmente notifica cuando los ventiladores son encendidos para que la humedad al interior del invernadero se disipe o el encendido del riego por neblina para que esta aumente a los niveles necesarios, segun la etapa de crecimiento de las plantas. Ademas se agregó una lista desplegable que pemite escoger dicha etapa (Solamente esta la lista, aun no se elabora el api que ejecuta las configuraciones necesarias).
+## Características
+- Monitoreo de temperatura y humedad ambiental usando sensores DHT22 (AM2301)
+- Monitoreo de humedad del suelo usando sensores YL69
+- Interfaz web para visualización de datos en tiempo real
+- Control automático de sistemas de riego y ventilación
+- Conectividad WiFi
 
-## Funcionamiento
+## Componentes de Hardware
+- ESP32 (microcontrolador principal)
+- 2x DHT22/AM2301 (sensores de temperatura y humedad ambiental)
+- 2x YL69 (sensores de humedad del suelo)
+- Fuente de alimentación 3.3V
 
-El programa consiste en dos partes principales: el código del dispositivo ESP32 y el código HTML para la visualización en el navegador.
+## Conexiones
+### Sensores DHT22
+- Sensor 1: GPIO33
+- Sensor 2: GPIO32
+- VCC: 3.3V
+- GND: GND
 
-El código del dispositivo ESP32 se encarga de leer los valores de temperatura y humedad del sensor DHT22 y proporcionarlos a través de una API. El ESP32 actúa como un servidor web que responde a las solicitudes en la ruta `/value` con los datos en formato JSON.
+### Sensores YL69
+- Sensor 1: ADC1 Canal 6
+- Sensor 2: ADC1 Canal 7
+- VCC: 3.3V
+- GND: GND
 
-El código HTML es la interfaz de usuario que muestra los valores de temperatura y humedad en tiempo real. Utiliza jQuery para hacer solicitudes periódicas a la API del ESP32 y actualizar los valores en la página sin necesidad de recargarla.
+## Configuración del Software
 
-## Requisitos
+### Prerrequisitos
+- ESP-IDF v5.3.1
+- Visual Studio Code con extensión ESP-IDF
 
-Para utilizar este programa, necesitarás:
+### Instalación
+1. Clonar el repositorio:
 
-- Un dispositivo ESP32 con el firmware adecuado y el código del sensor DHT22 configurado.
-- Un sensor DHT22 conectado al ESP32 para medir la temperatura y humedad.
-- Un entorno de desarrollo o IDE para cargar el código en el ESP32.
-- Un navegador web compatible con JavaScript para visualizar la página HTML.
+```bash
+git clone https://github.com/briggitte-angrino/smart-greenhouse-liwaisi.git
+```
 
-## Configuración
+2. Configurar el WiFi:
+   - Modificar las credenciales WiFi en el archivo de configuración
 
-1. Carga el código del dispositivo ESP32 en tu dispositivo y asegúrate de que esté conectado correctamente al sensor DHT22.
-2. Asegúrate de que tu ESP32 esté configurado para actuar como un servidor web y responder a las solicitudes en la ruta `/value`.
-3. Abre el archivo HTML en un navegador web. Asegúrate de que el ESP32 esté conectado a la red y el servidor web esté en funcionamiento.
-4. La página HTML mostrará los valores de temperatura y humedad en tiempo real.
+3. Compilar y flashear:
 
-## Personalización
+```bash
+idf.py build
+idf.py -p [PUERTO] flash
+```
 
-Si deseas personalizar este programa, aquí hay algunas áreas que podrías modificar:
-
-- Estilos CSS: Puedes ajustar los estilos en el archivo HTML para cambiar la apariencia de la página.
-- Intervalo de actualización: Puedes modificar el intervalo de actualización en la función `setInterval()` del archivo HTML para ajustar la frecuencia de actualización de los valores.
-
-## Contribuciones
-
-Si deseas contribuir a este programa, siéntete libre de hacerlo. Puedes abrir un pull request con tus mejoras o sugerencias.
-
-Esperamos que este programa te sea útil para monitorear la temperatura y humedad en tiempo real. Si tienes alguna pregunta o problema, no dudes en comunicarte con nosotros.
-
-¡Disfruta y mantente informado sobre el clima al interior de tu vivienda, o en algún espacio donde lo necesites, con este monitor de temperatura y humedad en tiempo real!
-
+## Estructura del Proyecto
+```bash
+smart-greenhouse-liwaisi/
+├── components/
+│   ├── sensorDHT/          # Componente para sensores DHT22
+│   ├── sensorYL69/         # Componente para sensores de humedad del suelo
+│   ├── yl69/                # Driver base para YL69
+│   └── wifi/               # Configuración WiFi
+│   └── webServer/          # Interfaz web
+├── main/
+│   └── sensor-iot-temp-hum.c  # Programa principal
+│   └── index.html             # Interfaz web
+```
