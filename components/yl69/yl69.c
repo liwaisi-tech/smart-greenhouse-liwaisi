@@ -5,12 +5,8 @@
 #include "freertos/task.h"
 
 static const char *TAG = "YL69";
-static adc_oneshot_unit_handle_t adc_handle = NULL;
+static adc_oneshot_unit_handle_t adc_handle;
 static bool adc_initialized = false;
-static QueueHandle_t sensor_queue = NULL;
-static uint32_t read_interval = 1000;
-static adc_channel_t adc_channel;
-static yl69_config_t current_config_t;
 static TaskHandle_t read_task_handle = NULL;
 
 #define SENSOR_MAX_VALUE 4095
@@ -44,49 +40,37 @@ esp_err_t yl69_init(yl69_config_t *config) {
     return ESP_OK;
 }
 
-int yl69_read_raw(void)
-{
+int yl69_read_raw(adc_channel_t channel) {
     if (!adc_initialized) {
         ESP_LOGE(TAG, "YL69 no inicializado");
         return -1;
     }
 
     int raw_value;
-    ESP_ERROR_CHECK(adc_oneshot_read(adc_handle, adc_channel, &raw_value));
+    ESP_ERROR_CHECK(adc_oneshot_read(adc_handle, channel, &raw_value));
     return raw_value;
 }
 
-int yl69_read_percentage(void) {
-    return map_value(yl69_read_raw());
+int yl69_read_percentage(adc_channel_t channel) {
+    return map_value(yl69_read_raw(channel));
 }
 
-static void task_read_yl69(void *pvParameter)
-{
-    yl69_config_t *config = (yl69_config_t *)pvParameter;
-    
-    while (1) {
+void task_send_data_yl69(void *pvParameter) {
+    yl69_config_t *config = (yl69_config_t *)pvParameter; 
+
+    while (1) { // Bucle infinito
+        ESP_LOGI(TAG, "yl69_start_reading yl69Sensor %d", config->sensor_id);
         yl69_reading_t reading = {
             .sensor_id = config->sensor_id,
-            .humidity = yl69_read_percentage()
+            .humidity = yl69_read_percentage(config->channel)
         };
         
-        if (xQueueSend(config->queue, &reading, 0) != pdTRUE) {
-            ESP_LOGW(TAG, "Cola llena, dato descartado");
+        if (xQueueSend(config->queue, &reading, pdMS_TO_TICKS(1000)) != pdTRUE) {
+            ESP_LOGW(TAG, "Cola llena, dato descartado sensor %d",config->sensor_id);
         }
-        vTaskDelay(pdMS_TO_TICKS(read_interval));
+        
+        vTaskDelay(pdMS_TO_TICKS(config->read_interval_ms)); // Espera antes de la siguiente lectura
     }
-}
-
-esp_err_t yl69_start_reading(yl69_config_t *config) {
-    ESP_LOGI(TAG, "yl69_start_reading");
-     // Guardar configuración con la que llega.
-    memcpy(&current_config_t, config, sizeof(yl69_config_t));
-    adc_channel = config->channel;
-    read_interval = config->read_interval_ms;
-
-    BaseType_t ret = xTaskCreate(task_read_yl69, "yl69_task", 2048, &config, 1, &read_task_handle);
-    ESP_LOGI(TAG, "ret: %d", ret);
-    return (ret == pdPASS) ? ESP_OK : ESP_FAIL;
 }
 
 esp_err_t yl69_stop_reading(void) {
@@ -95,18 +79,5 @@ esp_err_t yl69_stop_reading(void) {
         vTaskDelete(read_task_handle);
         read_task_handle = NULL;
     }
-    return ESP_OK;
-}
-
-
-esp_err_t yl69_stop_reading(void) {
-    // Solo eliminar la unidad ADC si es el último sensor
-    if (adc_initialized) {
-        ESP_ERROR_CHECK(adc_oneshot_del_unit(adc_handle));
-        adc_initialized = false;
-    }
-    
-    sensor_queue = NULL;
-    
     return ESP_OK;
 }

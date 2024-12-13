@@ -37,12 +37,9 @@ void recive_data_YL69_task(void *pvParameters) {
 
 void read_data_task(void *pvParameters) { 
     while (1) {
-        Data data;
-        if (read_data_climate(&data) == pdTRUE) {
-            temp1 = data.temp1;
-            hum1 = data.hum1;
-            temp2 = data.temp2;
-            hum2 = data.hum2;
+        dht22_reading_t data;
+        if (xQueueReceive(buffer_ventilation, &data, 0) == pdTRUE) {
+            ESP_LOGI(TAG, "Lectura exitosa* Sensor %d Temp: %f°C, Hum1: %f", data.sensor_id, data.temp, data.hum);
         }
         vTaskDelay(pdMS_TO_TICKS(1000)); // Ajusta el intervalo de lectura según sea necesario
     }
@@ -128,17 +125,14 @@ void app_main()
         ESP_LOGE(TAG, "Error al crear la cola para ventilacion");
         return;
     }
-    // inicializar config de sensores YL69
-    sensor_yl69_init(&buffer_irrigation);
 
-    //inicia captura de datos de sensores YL69
+    // inicializar lecturas de sensores YL69
+    sensor_yl69_init(&buffer_irrigation);
     get_data_sensorYL69();
+    //Crear tarea de recepción de los datos a la cola
+    xTaskCreate(recive_data_YL69_task, "recive_data_YL69_task", 4096, NULL, 2, NULL);
     
-    // Crear tarea de lectura
-    ESP_LOGI(TAG, "iniciando recepcion de datos de la cola de riegoYL69");
-    xTaskCreate(recive_data_YL69_task, "recive_data_YL69_task", 4096, NULL, 3, NULL);
-    
-    sensor_main(); //Crea tarea que escribe valores en la cola
+    sensor_dht22_main(&buffer_ventilation); //Crea tarea que escribe valores dht en la cola
     xTaskCreate(read_data_task, "read_data_task", 4096, NULL, 3, NULL);   
     web_server_init();
 }
