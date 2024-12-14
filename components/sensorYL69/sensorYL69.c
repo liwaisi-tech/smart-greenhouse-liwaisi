@@ -52,14 +52,14 @@ void get_data_sensorYL69(void) {
     // Iniciar la lectura del primer sensor
     int8_t priority = sensor_configs[0].priority;
 
-    BaseType_t ret1 = xTaskCreatePinnedToCore (task_send_data_yl69, "yl69_task", 2048, &sensor_configs[0], priority , &read_task_handle,0);
+    BaseType_t ret1 = xTaskCreatePinnedToCore (task_send_data_yl69, "yl69_task1", 2048, &sensor_configs[0], priority , &read_task_handle,0);
     if (ret1 != pdPASS) {
         ESP_LOGE(TAG, "Error al iniciar la lectura del sensor 1: %d", ret1);
     }
 
     // Iniciar la lectura del segundo sensor
     priority = sensor_configs[1].priority;
-     BaseType_t ret2 = xTaskCreatePinnedToCore (task_send_data_yl69, "yl69_task", 2048, &sensor_configs[1], priority , &read_task_handle,0);
+     BaseType_t ret2 = xTaskCreatePinnedToCore (task_send_data_yl69, "yl69_task2", 2048, &sensor_configs[1], priority , &read_task_handle,0);
     if (ret2 != pdPASS) {
         ESP_LOGE(TAG, "Error al iniciar la lectura del sensor 1: %d", ret2);
     }

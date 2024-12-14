@@ -29,7 +29,8 @@ void recive_data_YL69_task(void *pvParameters) {
     while (1) {
         yl69_reading_t reading;
         if (xQueueReceive(buffer_irrigation, &reading, 0) == pdTRUE) {
-            ESP_LOGI(TAG, "Dato recibido Sensor %d humedad suelo %d", reading.sensor_id, reading.humidity);
+            ESP_LOGI(TAG, "Dato recibido humedad suelo cajon %d = %d", reading.sensor_id, reading.humidity);
+            
         }
         vTaskDelay(pdMS_TO_TICKS(1000)); // Ajusta el intervalo de lectura según sea necesario
     }
@@ -39,7 +40,7 @@ void read_data_task(void *pvParameters) {
     while (1) {
         dht22_reading_t data;
         if (xQueueReceive(buffer_ventilation, &data, 0) == pdTRUE) {
-            ESP_LOGI(TAG, "Lectura exitosa* Sensor %d Temp: %f°C, Hum1: %f", data.sensor_id, data.temp, data.hum);
+            ESP_LOGI(TAG, "Lectura exitosa* Sensor %d Temp: %f°C, Hum1: %f", data.sensor_id, data.temperature, data.humidity);
         }
         vTaskDelay(pdMS_TO_TICKS(1000)); // Ajusta el intervalo de lectura según sea necesario
     }
@@ -114,13 +115,13 @@ void app_main()
     ESP_ERROR_CHECK(wifi_init_sta());
 
     //create the irrigation queue buffer 
-    buffer_irrigation = xQueueCreate(QUEUE_SIZE, sizeof(tempHumidity_t));
+    buffer_irrigation = xQueueCreate(QUEUE_SIZE, sizeof(yl69_reading_t));
     if (buffer_irrigation == NULL) {
         ESP_LOGE(TAG, "Error al crear la cola para YL69");
         return;
     }
     //create the ventilation queue buffer 
-    buffer_ventilation = xQueueCreate(QUEUE_SIZE, sizeof(tempHumidity_t));
+    buffer_ventilation = xQueueCreate(QUEUE_SIZE, sizeof(dht22_reading_t));
     if (buffer_ventilation == NULL) {
         ESP_LOGE(TAG, "Error al crear la cola para ventilacion");
         return;
@@ -131,6 +132,7 @@ void app_main()
     get_data_sensorYL69();
     //Crear tarea de recepción de los datos a la cola
     xTaskCreate(recive_data_YL69_task, "recive_data_YL69_task", 4096, NULL, 2, NULL);
+   
     
     sensor_dht22_main(&buffer_ventilation); //Crea tarea que escribe valores dht en la cola
     xTaskCreate(read_data_task, "read_data_task", 4096, NULL, 3, NULL);   
