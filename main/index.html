@@ -17,9 +17,9 @@
             margin-top: 20px;
         }
         .header {
-            font-size: 36px;
+            font-size: 2.5em; /* Tamaño de fuente responsivo */
             font-weight: bold;
-            color: #d92525;
+            color: #0a4347;
             margin-bottom: 20px;
         }
         .cajon {
@@ -35,19 +35,20 @@
             box-sizing: border-box; /* Incluir padding y border en el ancho total */
         }
         .cajon-header {
-            font-size: 24px;
+            font-size: 1.5em; /* Tamaño de fuente responsivo */
             font-weight: bold;
-            color: #d92525;
+            color: #1a7568;
             margin-bottom: 10px;
         }
         .value {
-            font-size: 24px;
+            font-size: 1.5em; /* Tamaño de fuente responsivo */
             font-weight: bold;
-            color: #333;
+            color: rgb(15, 158, 34);
         }
         .label {
-            font-size: 18px;
-            color: #597;
+            font-size: 1.2em; /* Tamaño de fuente responsivo */
+            color: #0b0b0b;
+            font-weight: bold;
         }
         .action-container {
             margin-top: 30px;
@@ -57,16 +58,30 @@
             border-radius: 8px;
         }
         .icon {
-            font-size: 48px;
+            font-size: 2em; /* Tamaño de icono responsivo */
             color: #289;
             margin: 10px;
+            
+        }
+
+        .fa-bell{
+            animation: vibrate 0.7s infinite;
+        }
+         /* Animación de vibración */
+         @keyframes vibrate {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
         }
         select {
             margin-top: 20px;
             padding: 10px;
             border-radius: 5px;
             border: 1px solid #ccc;
-            font-size: 16px;
+            font-size: 1em; /* Tamaño de fuente responsivo */
             width: 100%; /* Hacer que el select ocupe todo el ancho disponible */
         }
 
@@ -78,6 +93,12 @@
             .action-container, .stage-container {
                 margin: 10px 0; /* Espaciado vertical en móviles */
             }
+            .header {
+                font-size: 2em; /* Ajustar tamaño de fuente en móviles */
+            }
+            .cajon-header, .value, .stageselect{
+                font-size: 1.2em; /* Ajustar tamaño de fuente en móviles */
+            }
         }
 
         .stage-container {
@@ -87,20 +108,44 @@
             padding: 20px;
             margin-top: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap; /* Permitir que los elementos se envuelvan */
+            justify-content: space-between; /* Espacio entre columnas */
         }
 
-        .current-stage {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
+        .stage-item {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            flex: 1 1 calc(50% - 10px); /* Dos columnas con espacio */
+            margin: 10px; /* Espaciado entre elementos */
+            display: inline-block;
+            justify-content: space-between; /* Alinear contenido dentro del item */
+            align-items: center; /* Centrar verticalmente */
+            background-color: #e6f7ff;
+        }
+
+        /* Estilo para el span de la etapa seleccionada */
+        .stageselect {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            font-weight: bold; /* Hacer el texto en negrita */
+            
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="header">SmartGrow Liwasi Modulo Unifamiliar</h1>
+        <h1 class="header">Modulo de Siembra Liwaisi</h1>
 
+        <div class="action-container">
+            <i class="icon fas fa-bell"></i>
+            <span class="label">En ejecución:   </span>
+            <span id="action" class="value">Monitoreando Siembra</span>
+        </div>
         <div class="cajon">
             <h2 class="cajon-header">Cajón 1</h2>
             <span class="label">Temperatura:</span>
@@ -110,7 +155,7 @@
             <span class="label">Humedad:</span>
             <i class="icon fas fa-tint"></i>
             <span id="hum1" class="value">-- %</span>
-            <span class="label">Humedad del suelo:</span>
+            <span class="label">Humedad <del></del> suelo:</span>
             <i class="icon fas fa-tint"></i>
             <span id="humGroud1" class="value">-- %</span>
         </div>
@@ -124,30 +169,28 @@
             <span class="label">Humedad:</span>
             <i class="icon fas fa-tint"></i>
             <span id="hum2" class="value">-- %</span>
-            <span class="label">Humedad del suelo:</span>
+            <span class="label">Humedad <del></del> suelo:</span>
             <i class="icon fas fa-tint"></i>
             <span id="humGroud2" class="value">-- %</span>
         </div>
 
-        <div class="action-container">
-            <i class="icon fas fa-bell"></i>
-            <span class="label">Acción:</span>
-            <span id="action" class="value">--</span>
-        </div>
 
         <div class="stage-container">
-            <form action="#">
-                <label for="stage">Selecciona una etapa:</label>
-                <select id="stage" onchange="enviarEtapa()">
-                    <option value="vegetativa">Vegetativa</option>
-                    <option value="germinacion">Germinación</option>
-                    <option value="floracion">Floración</option>
-                </select>
-            </form>
-            <div class="current-stage">
-                <label class="label">Etapa actual:</label>
+            <div class="stage-item">
+                <span class="label">Etapa actual:</span>
                 <span id="selectionstage" class="value">Vegetativa</span> <!-- Valor inicial -->
             </div>
+            <div class ="stageselect">
+                <form action="#">
+                    <span for="stage">Cambiar etapa:</span>
+                    <select id="stage" onchange="enviarEtapa()">
+                        <option value="Vegetativa">Vegetativa</option>
+                        <option value="Germinacion">Germinación</option>
+                        <option value="Floración">Floración</option>
+                    </select>
+                </form>   
+            </div>
+                  
         </div>
     </div>
 
