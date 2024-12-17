@@ -1,213 +1,199 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartGrow Liwasi Modulo Unifamiliar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        /* Estilos para el contenedor principal */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
         .container {
             text-align: center;
-            margin-top: 50px;
-            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            margin-top: 20px;
         }
-
-        .title{
+        .header {
             font-size: 36px;
             font-weight: bold;
-            color: rgb(217, 35, 35);
+            color: #d92525;
+            margin-bottom: 20px;
         }
-
-        /* Estilos para los valores de temperatura y humedad */
+        .cajon {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            width: calc(50% - 40px); /* Dos cajones por fila */
+            max-width: 300px; /* Ancho máximo */
+            box-sizing: border-box; /* Incluir padding y border en el ancho total */
+        }
+        .cajon-header {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d92525;
+            margin-bottom: 10px;
+        }
         .value {
-            font-size: 36px;
+            font-size: 24px;
             font-weight: bold;
             color: #333;
         }
-
-        /* Estilos para las etiquetas de temperatura y humedad */
         .label {
-            font-size: 20px;
+            font-size: 18px;
             color: #597;
         }
-        
-        .notification{
-            font-size: 20px;
-            color:#e30337 ;
-            background: #c6ddde;
+        .action-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e6f7ff;
+            border: 1px solid #b3e0ff;
+            border-radius: 8px;
         }
-
-        .containercolum{
-            display: flex;
-            flex-direction: row;
-            align-content: space-between;
-            flex-wrap: nowrap;
-            margin:  100px;
-            justify-content: center;
-            text-align: center;
-            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-            font-size: 20px;
-        }
-        .containerCajones{
-            display: flex;
-            flex-direction:column;
-            align-content: space-between;
-            flex-wrap: nowrap;
-            margin:  100px;
-            justify-content: center;
-            text-align: center;
-            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-            font-size: 20px;
-        }
-        .cajon1{ 
-            margin-right: 40px ;
-            color: #597;
-            column-gap: 20px;
-            background-color:bisque;
-
-        }
-        .notificationcontainer{ 
-            margin-right: 40px ;
-            color: #597;
-            column-gap: 20px;
-
-        }
-        .stagecontainer{
-            margin-left: 20px; 
-            color: #597;
-            justify-content: center;
-        }
-
-        /* Estilos para los iconos */
         .icon {
             font-size: 48px;
             color: #289;
             margin: 10px;
         }
-        /* estilos para el pop up*/
-
         select {
-        margin-bottom: 80px;
-        margin-top: 10px;
-        font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-        font-size: medium;
-        outline: 0;
-        background: #c6ddde;
-        color:#6a9abf ;
-        border: 3px solid rgb(55, 92, 119);
-        padding: 8px;
-        border-radius: 15px;
-      }
-    </style>
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            width: 100%; /* Hacer que el select ocupe todo el ancho disponible */
+        }
 
-        
-    <!-- Incluir librería de iconos (FontAwesome) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <!-- Incluir jQuery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-</head>
-<body class ="body">
-    <div class="container">
-        <h1>SmartGrow Liwasi Modulo Unifamiliar</h1>
-        <div class = containerCajones>
-            <div class = cajon1>
-                <div>
-                    <span class="label">Temperatura Cajon2:</span>
-                    <i class="icon fas fa-thermometer-half"></i>
-                    <span id="temp1" class="value"></span>
-                    <span class="unit">°C</span>
-                </div>
-                <div>
-                    <span class="label">Humedad Cajon1:</span>
-                    <i class="icon fas fa-tint"></i>
-                    <span id="hum1" class="value"></span>
-                    <span class="unit">%</span>
-                </div>
-            </div>
-            <div class="cajones">
-                <div>
-                    <span class="label">Temperatura Cajon2:</span>
-                    <i class="icon fas fa-thermometer-half"></i>
-                    <span id="temp2" class="value"></span>
-                    <span class="unit">°C</span>
-                </div>
-                <div>
-                    <span class="label">Humedad Cajon2:</span>
-                    <i class="icon fas fa-tint"></i>
-                    <span id="hum2" class="value"></span>
-                    <span class="unit">%</span>
-                </div>
-            </div>
-            
-           
-        </div>
-        
-        <script>
-            // JavaScript para actualizar los valores de temperatura y humedad
-            function updateData(temp1, hum1,temp2,hum2, alarma) {
-                document.getElementById("temp1").innerText = temp1.toFixed(1);
-                document.getElementById("hum1").innerText = hum1.toFixed(1);
-                document.getElementById("temp2").innerText = temp2.toFixed(1);
-                document.getElementById("hum2").innerText = hum2.toFixed(1);
-                if (alarma.toFixed(1) == 1){
-                    document.getElementById("action").innerText = "Ventiladores ON";
-                }
-                else if (alarma.toFixed(1) == 0){
-                    document.getElementById("action").innerText = "Riego aereo ON";
-                }
-                
+        /* Media Queries para Responsividad */
+        @media (max-width: 768px) {
+            .cajon {
+                width: calc(100% - 40px); /* Un cajón por fila en pantallas pequeñas */
             }
-            // Actualización de datos en tiempo real
-            setInterval(function() {
-                $.get("/value", function(data) {
-                   // Convertir la respuesta JSON en un objeto JavaScript
-                    var response = JSON.parse(data); 
+            .action-container, .stage-container {
+                margin: 10px 0; /* Espaciado vertical en móviles */
+            }
+        }
 
-                    // Obtener los valores de temperatura y humedad del objeto
-                    var temp1 = response.temp1;
-                    var hum1 = response.hum1;
-                    var temp2 = response.temp2;
-                    var hum2 = response.hum2;
-                    var alarma = response.alarma;
-                    // Actualizar los valores en la página HTML
-                    updateData(temp1, hum1,temp2,hum2, alarma);
-                });
-            }, 5000); // Actualizar cada 1 min (ajustar según tus necesidades)
-        </script>
-    </div>
-    <div class = containercolum>
-        <div class="notificationcontainer">
+        .stage-container {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .current-stage {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="header">SmartGrow Liwasi Modulo Unifamiliar</h1>
+
+        <div class="cajon">
+            <h2 class="cajon-header">Cajón 1</h2>
+            <span class="label">Temperatura:</span>
+            <i class="icon fas fa-thermometer-half"></i>
+            <span id="temp1" class="value">-- °C</span>
+            <br>
+            <span class="label">Humedad:</span>
+            <i class="icon fas fa-tint"></i>
+            <span id="hum1" class="value">-- %</span>
+            <span class="label">Humedad del suelo:</span>
+            <i class="icon fas fa-tint"></i>
+            <span id="humGroud1" class="value">-- %</span>
+        </div>
+
+        <div class="cajon">
+            <h2 class="cajon-header">Cajón 2</h2>
+            <span class="label">Temperatura:</span>
+            <i class="icon fas fa-thermometer-half"></i>
+            <span id="temp2" class="value">-- °C</span>
+            <br>
+            <span class="label">Humedad:</span>
+            <i class="icon fas fa-tint"></i>
+            <span id="hum2" class="value">-- %</span>
+            <span class="label">Humedad del suelo:</span>
+            <i class="icon fas fa-tint"></i>
+            <span id="humGroud2" class="value">-- %</span>
+        </div>
+
+        <div class="action-container">
             <i class="icon fas fa-bell"></i>
-            <span class="label">Accion:</span>
-            <span id="action" class="notification"></span>
-        </div>   
+            <span class="label">Acción:</span>
+            <span id="action" class="value">--</span>
+        </div>
 
-        <div class = "stagecontainer">
+        <div class="stage-container">
             <form action="#">
-                <i class="icon fa fa-seedling"></i>
                 <label for="stage">Selecciona una etapa:</label>
                 <select id="stage" onchange="enviarEtapa()">
                     <option value="vegetativa">Vegetativa</option>
                     <option value="germinacion">Germinación</option>
                     <option value="floracion">Floración</option>
                 </select>
-            </form>    
+            </form>
+            <div class="current-stage">
+                <label class="label">Etapa actual:</label>
+                <span id="selectionstage" class="value">Vegetativa</span> <!-- Valor inicial -->
+            </div>
         </div>
     </div>
-    
-         
-    <!-- JavaScript para enviar la etapa seleccionada a través de una API -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
+        // JavaScript para actualizar los valores de temperatura y humedad
+        function updateData(temp1, hum1, temp2, hum2, alarma) {
+            document.getElementById("temp1").innerText = temp1.toFixed(1) + " °C";
+            document.getElementById("hum1").innerText = hum1.toFixed(1) + " %";
+            document.getElementById("temp2").innerText = temp2.toFixed(1) + " °C";
+            document.getElementById("hum2").innerText = hum2.toFixed(1) + " %";
+            if (alarma.toFixed(1) == 1) {
+                document.getElementById("action").innerText = "Ventiladores ON";
+            } else if (alarma.toFixed(1) == 0) {
+                document.getElementById("action").innerText = "Riego aéreo ON";
+            }
+        }
+
+        // Actualización de datos en tiempo real
+        setInterval(function() {
+            $.get("/value")
+                .done(function(data) {
+                    var response = JSON.parse(data);
+                    var temp1 = response.temp1;
+                    var hum1 = response.hum1;
+                    var temp2 = response.temp2;
+                    var hum2 = response.hum2;
+                    var alarma = response.alarma;
+                    updateData(temp1, hum1, temp2, hum2, alarma);
+                })
+                .fail(function() {
+                    console.error("Error al obtener los datos de los sensores.");
+                });
+        }, 5000); // Actualizar cada 5 segundos
+
         function enviarEtapa() {
             var selectedEtapa = document.getElementById("stage").value;
-
-            // Enviar la etapa seleccionada a través de una solicitud a una API
-            $.post("/stage", { etapa: selectedEtapa }, function(response) {
-                // Manejar la respuesta de la API si es necesario
-                console.log(response);
-            });
+            document.getElementById("selectionstage").innerText = selectedEtapa; // Actualizar etapa actual
+            $.post("/stage", { etapa: selectedEtapa })
+                .done(function(response) {
+                    console.log(response);
+                })
+                .fail(function() {
+                    console.error("Error al enviar la etapa seleccionada.");
+                });
         }
-    </script> 
-    </div>  
+    </script>
 </body>
 </html>
