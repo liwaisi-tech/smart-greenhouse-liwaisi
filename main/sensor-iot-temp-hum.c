@@ -10,6 +10,7 @@
 #include "yl69.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
+#include "actionPage.h"
 
 #define QUEUE_SIZE 10  // Define el tamaño de la cola
 QueueHandle_t buffer_irrigation;  // Declara la variable global para la cola de riego
@@ -17,11 +18,6 @@ QueueHandle_t buffer_ventilation;  // Declara la variable global para la cola de
 
 extern const char index_start[] asm("_binary_index_html_start");
 extern const char index_end[] asm("_binary_index_html_end");
-
-//----------Variables de captura de temperatura y humedad---------//
-float temp1= 0, hum1 = 0, temp2 = 0, hum2 = 0;
-//------ Variables mock para enviar al index----------//
-int humgerm;
 // Definir el TAG para logging
 static const char *TAG = "sensor-iot_temp_hum";
 
@@ -50,14 +46,13 @@ static esp_err_t data_sensor_get_handler(httpd_req_t *req) {
     
     httpd_resp_set_hdr(req, "Content-Type", "application/json");
     char res[100];
-    if (hum1 < 70) {
-        humgerm = 1; //"Riego aereo On";
-    }
-    else if (hum1> 70) {
-        humgerm = 0; //"Riego aereo Off";
-    }
-
-    sprintf(res, "{ \"hum1\": %f, \"temp1\": %f, \"hum2\": %f, \"temp2\": %f,\"alarma\": %d}", hum1, temp1,hum2,temp2,humgerm);
+    char alarm[100] = "Monitoreando siembra";
+    tempHumidity_t data;
+    //strcpy(alarm, "Humedad del suelo baja");
+    action_page_main((QueueHandle_t[2]){buffer_irrigation, buffer_ventilation}, &data);
+    
+    sprintf(res, "{ \"hum1\": %f, \"temp1\": %f, \"hum2\": %f, \"temp2\": %f,\"alarma\": 1}",
+     data.humidity1, data.temperature1,data.humidity2,data.temperature2);
     httpd_resp_send(req, res, HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
 }
