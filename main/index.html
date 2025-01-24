@@ -12,29 +12,28 @@
             margin: 0;
             padding: 20px;
         }
-        .container {
+        header {
             text-align: center;
             margin-top: 20px;
         }
-        .header {
-            font-size: 2.5em; /* Tamaño de fuente responsivo */
+        .header-title {
+            font-size: 2em; /* Tamaño de fuente responsivo */
             font-weight: bold;
             color: #0a4347;
             margin-bottom: 20px;
         }
-        .cajon {
+        section {
             background-color: #fff;
             border: 1px solid #ccc;
             border-radius: 8px;
             padding: 20px;
             margin: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            width: calc(50% - 40px); /* Dos cajones por fila */
-            max-width: 300px; /* Ancho máximo */
+            display: block;
+            width: 100%; /* Un cajón por fila en pantallas pequeñas */
             box-sizing: border-box; /* Incluir padding y border en el ancho total */
         }
-        .cajon-header {
+        .section-header {
             font-size: 1.5em; /* Tamaño de fuente responsivo */
             font-weight: bold;
             color: #1a7568;
@@ -87,16 +86,16 @@
 
         /* Media Queries para Responsividad */
         @media (max-width: 768px) {
-            .cajon {
+            section {
                 width: calc(100% - 40px); /* Un cajón por fila en pantallas pequeñas */
             }
             .action-container, .stage-container {
                 margin: 10px 0; /* Espaciado vertical en móviles */
             }
-            .header {
+            .header-title {
                 font-size: 2em; /* Ajustar tamaño de fuente en móviles */
             }
-            .cajon-header, .value, .stageselect{
+            .section-header, .value, .stageselect{
                 font-size: 1.2em; /* Ajustar tamaño de fuente en móviles */
             }
         }
@@ -108,9 +107,9 @@
             padding: 20px;
             margin-top: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-wrap: wrap; /* Permitir que los elementos se envuelvan */
-            justify-content: space-between; /* Espacio entre columnas */
+            display: block;
+            width: 100%; /* Un cajón por fila en pantallas pequeñas */
+            box-sizing: border-box; /* Incluir padding y border en el ancho total */
         }
 
         .stage-item {
@@ -118,11 +117,9 @@
             border-radius: 8px;
             padding: 20px;
             margin-top: 20px;
-            flex: 1 1 calc(50% - 10px); /* Dos columnas con espacio */
-            margin: 10px; /* Espaciado entre elementos */
-            display: inline-block;
-            justify-content: space-between; /* Alinear contenido dentro del item */
-            align-items: center; /* Centrar verticalmente */
+            display: block;
+            width: 100%; /* Un cajón por fila en pantallas pequeñas */
+            box-sizing: border-box; /* Incluir padding y border en el ancho total */
             background-color: #e6f7ff;
         }
 
@@ -135,81 +132,102 @@
             font-weight: bold; /* Hacer el texto en negrita */
             
         }
+
+        @media (min-width: 768px) {
+            section {
+                width: calc(50% - 40px); /* Dos cajones por fila en pantallas grandes */
+                display: inline-block;
+            }
+            .stage-container {
+                display: flex;
+                flex-wrap: wrap; /* Permitir que los elementos se envuelvan */
+                justify-content: space-between; /* Espacio entre columnas */
+            }
+            .stage-item {
+                flex: 1 1 calc(50% - 10px); /* Dos columnas con espacio */
+                margin: 10px; /* Espaciado entre elementos */
+                display: inline-block;
+                justify-content: space-between; /* Alinear contenido dentro del item */
+                align-items: center; /* Centrar verticalmente */
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="header">Modulo de Siembra Liwaisi</h1>
+    <header>
+        <h1 class="header-title">Modulo de Siembra Liwasi</h1>
+    </header>
 
-        <div class="action-container">
-            <i class="icon fas fa-bell"></i>
-            <span class="label">En ejecución:   </span>
-            <span id="action" class="value">Monitoreando Siembra</span>
-        </div>
-        <div class="cajon">
-            <h2 class="cajon-header">Cajón 1</h2>
-            <span class="label">Temperatura:</span>
-            <i class="icon fas fa-thermometer-half"></i>
-            <span id="temp1" class="value">-- °C</span>
-            <br>
-            <span class="label">Humedad:</span>
-            <i class="icon fas fa-tint"></i>
-            <span id="hum1" class="value">-- %</span>
-            <span class="label">Humedad <del></del> suelo:</span>
-            <i class="icon fas fa-tint"></i>
-            <span id="humGroud1" class="value">-- %</span>
-        </div>
+    <section class="action-container">
+        <i class="icon fas fa-bell"></i>
+        <span class="label">En ejecución:   </span>
+        <span id="action" class="value">Monitoreando Siembra</span>
+    </section>
+    <section>
+        <h2 class="section-header">Cajón 1</h2>
+        <span class="label">Temperatura:</span>
+        <i class="icon fas fa-thermometer-half"></i>
+        <span id="temp1" class="value">-- °C</span>
+        <br>
+        <span class="label">Humedad:</span>
+        <i class="icon fas fa-tint"></i>
+        <span id="hum1" class="value">-- %</span>
+        <span class="label">Humedad del suelo:</span>
+        <i class="icon fas fa-tint"></i>
+        <span id="humGroud1" class="value">-- %</span>
+    </section>
 
-        <div class="cajon">
-            <h2 class="cajon-header">Cajón 2</h2>
-            <span class="label">Temperatura:</span>
-            <i class="icon fas fa-thermometer-half"></i>
-            <span id="temp2" class="value">-- °C</span>
-            <br>
-            <span class="label">Humedad:</span>
-            <i class="icon fas fa-tint"></i>
-            <span id="hum2" class="value">-- %</span>
-            <span class="label">Humedad <del></del> suelo:</span>
-            <i class="icon fas fa-tint"></i>
-            <span id="humGroud2" class="value">-- %</span>
-        </div>
+    <section>
+        <h2 class="section-header">Cajón 2</h2>
+        <span class="label">Temperatura:</span>
+        <i class="icon fas fa-thermometer-half"></i>
+        <span id="temp2" class="value">-- °C</span>
+        <br>
+        <span class="label">Humedad:</span>
+        <i class="icon fas fa-tint"></i>
+        <span id="hum2" class="value">-- %</span>
+        <span class="label">Humedad del suelo:</span>
+        <i class="icon fas fa-tint"></i>
+        <span id="humGroud2" class="value">-- %</span>
+    </section>
 
 
-        <div class="stage-container">
-            <div class="stage-item">
-                <span class="label">Etapa actual:</span>
-                <span id="selectionstage" class="value">Vegetativa</span> <!-- Valor inicial -->
-                <div id="referencias" class="value"></div>
-                    <!-- Valores de referencia para cada etapa -->
-                    <p id="refTemp">Ref-Temperatura: -- °C</p>
-                    <p id="refHum">Ref-Humedad: -- %</p>
-                    <p id="refHumSuelo">Ref-Humedad del suelo: -- %</p>
-                </div>
-            </div>
-            <div class ="stageselect">
-                <form action="#">
-                    <span for="stage">Cambiar etapa:</span>
-                    <select id="stage" onchange="enviarEtapa()">
-                        <option value="Vegetativa">Vegetativa</option>
-                        <option value="Germinacion">Germinación</option>
-                        <option value="Floración">Floración</option>
-                    </select>
-                </form>   
-            </div>
-                  
-        </div>
+    <section class="stage-container">
+        <article class="stage-item">
+            <span class="label">Etapa actual:</span>
+            <span id="selectionstage" class="value">Vegetativa</span> <!-- Valor inicial -->
+            <div id="referencias" class="value"></div>
+                <!-- Valores de referencia para cada etapa -->
+                <p id="refTemp">Ref-Temperatura: -- °C</p>
+                <p id="refHum">Ref-Humedad: -- %</p>
+                <p id="refHumSuelo">Ref-Humedad del suelo: -- %</p>
+            </article>
+        </section>
+        <aside class ="stageselect">
+            <form action="#">
+                <span for="stage">Cambiar etapa:</span>
+                <select id="stage" onchange="enviarEtapa()">
+                    <option value="Vegetativa">Vegetativa</option>
+                    <option value="Germinacion">Germinación</option>
+                    <option value="Floración">Floración</option>
+                </select>
+            </form>   
+        </aside>
+              
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         // JavaScript para actualizar los valores de temperatura y humedad
-        function updateData(temp1, hum1, temp2, hum2, alarma) {
+        function updateData(temp1, hum1, temp2, hum2, alarma, humGroud1, humGroud2) {
             document.getElementById("temp1").innerText = temp1.toFixed(1) + " °C";
             document.getElementById("hum1").innerText = hum1.toFixed(1) + " %";
             document.getElementById("temp2").innerText = temp2.toFixed(1) + " °C";
             document.getElementById("hum2").innerText = hum2.toFixed(1) + " %";
+            document.getElementById("humGroud1").innerText = humGroud1.toFixed(1) + " %";
+            document.getElementById("humGroud2").innerText = humGroud2.toFixed(1) + " %";
             if (alarma.toFixed(1) == 1) {
-                document.getElementById("action").innerText = "Ventiladores ON";
+                document.getElementById("action").innerText = "Monitoreando siembra";
             } else if (alarma.toFixed(1) == 0) {
                 document.getElementById("action").innerText = "Riego aéreo ON";
             }
@@ -225,12 +243,15 @@
                     var temp2 = response.temp2;
                     var hum2 = response.hum2;
                     var alarma = response.alarma;
-                    updateData(temp1, hum1, temp2, hum2, alarma);
+                    var humGroud1 = response.humG1;
+                    var humGroud2 = response.humG2;
+                    console.log(response);
+                    updateData(temp1, hum1, temp2, hum2, alarma, humGroud1, humGroud2);
                 })
                 .fail(function() {
                     console.error("Error al obtener los datos de los sensores.");
                 });
-        }, 1000); // Actualizar cada 1 segundo
+        }, 60000); // Actualizar cada 1 min
 
         function enviarEtapa() {
             var selectedEtapa = document.getElementById("stage").value;

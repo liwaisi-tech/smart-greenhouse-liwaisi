@@ -9,7 +9,6 @@
 #include "sensorYL69.h"
 #include "yl69.h"
 #include "esp_log.h"
-#include "nvs_flash.h"
 #include "actionPage.h"
 
 #define QUEUE_SIZE 10  // Define el tamaño de la cola
@@ -43,16 +42,14 @@ void read_data_task(void *pvParameters) {
 }
 //-----------Handler obtenerdatos---------//
 static esp_err_t data_sensor_get_handler(httpd_req_t *req) {
-    
     httpd_resp_set_hdr(req, "Content-Type", "application/json");
-    char res[100];
-    char alarm[100] = "Monitoreando siembra";
+    char res[200];  // Incrementar el tamaño del buffer
     tempHumidity_t data;
     //strcpy(alarm, "Humedad del suelo baja");
     action_page_main((QueueHandle_t[2]){buffer_irrigation, buffer_ventilation}, &data);
+    snprintf(res, sizeof(res), "{ \"hum1\": %f, \"temp1\": %f, \"hum2\": %f, \"temp2\": %f, \"humG1\": %f, \"humG2\": %f, \"alarma\": %d }",
+             data.humidity1, data.temperature1, data.humidity2, data.temperature2, data.humGroud1, data.humGroud2,1);
     
-    sprintf(res, "{ \"hum1\": %f, \"temp1\": %f, \"hum2\": %f, \"temp2\": %f,\"alarma\": 1}",
-     data.humidity1, data.temperature1,data.humidity2,data.temperature2);
     httpd_resp_send(req, res, HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
 }
@@ -98,16 +95,13 @@ void log_startup_info() {
     ESP_LOGI(TAG, "IDF version: %s", esp_get_idf_version());
 }
 
-void app_main()
+void app_main(void)
 {
     log_startup_info();
-     esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-      ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
+    esp_err_t ret = wifi_init_sta();
+    if (ret != ESP_OK) {
+        ESP_ERROR_CHECK(ret);  // Esto abortará el programa si hay un error
     }
-    ESP_ERROR_CHECK(ret);
-    ESP_ERROR_CHECK(wifi_init_sta());
 
     //create the irrigation queue buffer 
     buffer_irrigation = xQueueCreate(QUEUE_SIZE, sizeof(yl69_reading_t));
@@ -125,11 +119,12 @@ void app_main()
     // inicializar lecturas de sensores YL69
     sensor_yl69_init(&buffer_irrigation);
     get_data_sensorYL69();
-    //Crear tarea de recepción de los datos a la cola
+    //Esta tarea debe mover junto con su implementación a al archivo que ejecuta acciones de ventilación o riego.
     xTaskCreate(recive_data_YL69_task, "recive_data_YL69_task", 4096, NULL, 2, NULL);
    
     
     sensor_dht22_main(&buffer_ventilation); //Crea tarea que escribe valores dht en la cola
+    //Esta tarea debe mover junto con su implementación a al archivo que ejecuta acciones de ventilación o riego.
     xTaskCreate(read_data_task, "read_data_task", 4096, NULL, 3, NULL);   
     web_server_init();
 }
