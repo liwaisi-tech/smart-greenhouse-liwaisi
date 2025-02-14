@@ -47,7 +47,7 @@ static esp_err_t data_sensor_get_handler(httpd_req_t *req) {
     tempHumidity_t data;
     //strcpy(alarm, "Humedad del suelo baja");
     action_page_main((QueueHandle_t[2]){buffer_irrigation, buffer_ventilation}, &data);
-    snprintf(res, sizeof(res), "{ \"hum1\": %f, \"temp1\": %f, \"hum2\": %f, \"temp2\": %f, \"humG1\": %f, \"humG2\": %f, \"alarma\": %d }",
+    snprintf(res, sizeof(res), "{ \"hum1\": %f, \"temp1\": %f, \"hum2\": %f, \"temp2\": %f, \"humG1\": %d, \"humG2\": %d, \"alarma\": %d }",
              data.humidity1, data.temperature1, data.humidity2, data.temperature2, data.humGroud1, data.humGroud2,1);
     
     httpd_resp_send(req, res, HTTPD_RESP_USE_STRLEN);

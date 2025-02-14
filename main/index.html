@@ -251,7 +251,7 @@
                 .fail(function() {
                     console.error("Error al obtener los datos de los sensores.");
                 });
-        }, 60000); // Actualizar cada 1 min
+        }, 10000); // Actualizar cada 10 seg
 
         function enviarEtapa() {
             var selectedEtapa = document.getElementById("stage").value;

@@ -14,7 +14,6 @@
 typedef struct {
     uint8_t sensor_id;
     int16_t humidity;
-    uint32_t timestamp;
 } yl69_reading_t;
 
 typedef struct {
@@ -42,6 +41,5 @@ typedef struct {
 esp_err_t yl69_init(yl69_config_t *config);
 int yl69_read_raw(adc_channel_t channel);
 int yl69_read_percentage(adc_channel_t channel);
-esp_err_t yl69_stop_reading(void);
 
 #endif // YL69_H
